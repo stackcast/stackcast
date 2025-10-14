@@ -146,18 +146,34 @@ stackcast/
 │
 ├── backend/                 # TypeScript CLOB API (Bun)
 │   ├── src/
-│   │   ├── index.ts                     # Express server
-│   │   ├── types/order.ts               # Type definitions
+│   │   ├── index.ts                     # Express server with CORS
+│   │   ├── types/
+│   │   │   ├── order.ts                 # Order, Trade, Market types
+│   │   │   └── express.d.ts             # Express augmentation
 │   │   ├── services/
-│   │   │   ├── orderManager.ts          # Order storage & indexing
-│   │   │   └── matchingEngine.ts        # Price-time priority matching
-│   │   └── routes/
-│   │       ├── markets.ts               # Market CRUD
-│   │       ├── orders.ts                # Order placement/cancellation
-│   │       └── orderbook.ts             # Orderbook & trades
+│   │   │   ├── redisClient.ts           # Redis connection
+│   │   │   ├── orderManagerRedis.ts     # Redis-based order storage
+│   │   │   ├── matchingEngine.ts        # Price-time priority matching (100ms)
+│   │   │   └── stacksMonitor.ts         # Block height monitoring & order expiration
+│   │   ├── routes/
+│   │   │   ├── markets.ts               # Market CRUD & stats
+│   │   │   ├── orders.ts                # Order placement/cancellation with sig verification
+│   │   │   └── orderbook.ts             # Orderbook, trades, price feeds
+│   │   └── utils/
+│   │       └── signatureVerification.ts # Stacks signature verification
 │   └── package.json
 │
-└── web/                     # Frontend (React - not implemented yet)
+└── web/                     # Frontend (React + Vite + TypeScript)
+    ├── src/
+    │   ├── App.tsx                      # Main app component
+    │   ├── contexts/
+    │   │   └── WalletContext.tsx        # Stacks wallet integration (@stacks/connect)
+    │   ├── lib/
+    │   │   ├── config.ts                # Network & contract configs
+    │   │   └── utils.ts                 # Utility functions
+    │   └── utils/
+    │       └── orderSigning.ts          # Order hash computation & wallet signing
+    └── package.json
 ```
 
 ## 🚀 Quick Start
@@ -165,7 +181,9 @@ stackcast/
 ### Prerequisites
 - [Clarinet](https://github.com/hirosystems/clarinet) (for Stacks contracts)
 - [Bun](https://bun.sh/) (for backend)
-- Stacks wallet (for testnet deployment)
+- [Redis](https://redis.io/) (for order storage)
+- [Node.js](https://nodejs.org/) 18+ (for frontend)
+- Stacks wallet ([Leather](https://leather.io/) or [Xverse](https://www.xverse.app/))
 
 ### 1. Smart Contracts
 
@@ -206,6 +224,9 @@ cd backend
 # Install dependencies
 bun install
 
+# Start Redis (required for order storage)
+redis-server
+
 # Set up environment
 cp .env.example .env
 # Edit .env with your contract addresses after deployment
@@ -219,7 +240,40 @@ bun start
 
 Server runs on `http://localhost:3000`
 
-### 3. Test the API
+The backend includes:
+- **REST API**: Markets, orders, orderbook endpoints
+- **Matching Engine**: Runs every 100ms, matches buy/sell orders
+- **Stacks Monitor**: Tracks block height, expires orders automatically
+- **Redis Storage**: Persistent order book and market data
+
+### 3. Frontend Web App
+
+```bash
+cd web
+
+# Install dependencies
+npm install
+
+# Set up environment
+cp .env.example .env
+# Configure VITE_API_BASE_URL and VITE_STACKS_NETWORK
+
+# Run development server
+npm run dev
+
+# Build for production
+npm run build
+```
+
+App runs on `http://localhost:5173`
+
+Features:
+- **WalletContext**: React context for Stacks wallet integration
+- **Order Signing**: Uses Stacks message signing for order authentication
+- **Contract Interaction**: Read/write functions for all contracts
+- **Network Support**: Devnet, testnet, mainnet configurations
+
+### 4. Test the API
 
 ```bash
 # Check health
@@ -522,36 +576,46 @@ Same as testnet, but use `--mainnet` flag and update network config.
 - ✅ Oracle Adapter (market lifecycle)
 
 ### Backend ✅
-- ✅ CLOB matching engine
-- ✅ Order management
-- ✅ REST API
+- ✅ CLOB matching engine (price-time priority, 100ms intervals)
+- ✅ Order management (Redis-backed)
+- ✅ REST API (markets, orders, orderbook)
+- ✅ Stacks block monitor (auto-expires orders)
+- ✅ Signature verification (optional Stacks signatures)
+
+### Frontend ✅
+- ✅ React + Vite + TypeScript
+- ✅ Wallet integration (@stacks/connect)
+- ✅ Order signing (Stacks message signing)
+- ✅ Network configuration (devnet/testnet/mainnet)
+- ✅ Contract interaction utilities
 
 ### To-Do
-- [ ] Frontend (React + Stacks.js)
+- [ ] Frontend UI components (order placement, market display, etc.)
 - [ ] WebSocket for real-time orderbook updates
-- [ ] Signature verification (Stacks signatures)
-- [ ] Database persistence (SQLite/Postgres)
+- [ ] Database persistence layer (PostgreSQL for production)
 - [ ] Market maker bot examples
 - [ ] Advanced order types (FOK, IOC, Post-Only)
 - [ ] Historical data API
-- [ ] Chart integration
-- [ ] Mobile app
+- [ ] Chart integration (TradingView/Lightweight Charts)
 
 ## 🎯 Production Readiness
 
 | Component | Status | Notes |
 |-----------|--------|-------|
 | **Smart Contracts** | ✅ Production | Uses real sBTC collateral |
-| **CLOB API** | ⚠️ Demo | In-memory storage (needs Redis/Postgres for prod) |
+| **CLOB API** | ✅ Production | Redis-backed, block monitoring |
+| **Frontend** | ⚠️ In Progress | Wallet integration complete, UI components pending |
 | **Tests** | ✅ Production | Verifies real sBTC movements |
 | **Deployment** | ✅ Ready | Can deploy to testnet/mainnet |
 
 ### For Production Launch:
 - ✅ Smart contracts ready
-- ❌ Backend needs Redis/Postgres
+- ✅ Backend API with Redis
+- ✅ Stacks wallet integration
+- ✅ Order signing & verification
+- ⚠️ Frontend UI components in progress
 - ❌ Need monitoring/alerting
 - ❌ Need market maker bots
-- ❌ Need frontend integration
 
 ## 📄 License
 
