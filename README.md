@@ -52,6 +52,7 @@ A production-ready prediction market platform built on Stacks blockchain, featur
 Stackcast uses **sBTC** as the collateral token - a 1:1 Bitcoin-backed fungible token on Stacks. This means users bet with real Bitcoin value that can be unwrapped to actual BTC.
 
 **Why sBTC?**
+
 - 🔗 Backed 1:1 by Bitcoin
 - 💰 Real value, not test tokens
 - 🏦 Can trade on Stacks DEXes
@@ -63,6 +64,7 @@ Stackcast uses **sBTC** as the collateral token - a 1:1 Bitcoin-backed fungible 
 Users interact with sBTC through three core operations:
 
 #### 1. **Split Position** (Deposit sBTC → Get YES/NO tokens)
+
 ```clarity
 ;; User deposits real sBTC into the contract
 (contract-call? SBTC-TOKEN transfer
@@ -75,6 +77,7 @@ Users interact with sBTC through three core operations:
 ```
 
 **Example:**
+
 ```
 User deposits:  100 sBTC (≈ $7)
 Contract locks: 100 sBTC
@@ -82,6 +85,7 @@ User receives:  100 YES + 100 NO tokens
 ```
 
 #### 2. **Merge Positions** (Burn YES+NO → Get sBTC back)
+
 ```clarity
 ;; User burns equal YES + NO tokens
 ;; Contract returns real sBTC from escrow
@@ -94,12 +98,14 @@ User receives:  100 YES + 100 NO tokens
 ```
 
 **Example:**
+
 ```
 User burns:     50 YES + 50 NO tokens
 Contract returns: 50 sBTC
 ```
 
 #### 3. **Redeem** (After resolution, winning tokens → sBTC)
+
 ```clarity
 ;; After oracle resolves market (e.g., YES wins)
 ;; Burn YES tokens, get sBTC payout
@@ -112,6 +118,7 @@ Contract returns: 50 sBTC
 ```
 
 **Example:**
+
 ```
 Market resolves: YES wins
 User holds: 100 YES tokens
@@ -121,12 +128,12 @@ User with NO: Gets nothing (burned)
 
 ### sBTC Across Networks
 
-| Network | sBTC Address | How to Get |
-|---------|-------------|------------|
-| **Simnet** (testing) | `SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token` | Auto-funded by Clarinet |
-| **Devnet** (local) | `SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token` | Auto-funded by Clarinet |
-| **Testnet** | `ST1F7QA2MDF17S807EPA36TSS8AMEFY4KA9TVGWXT.sbtc-token` | Faucet |
-| **Mainnet** | `SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token` | Bridge from BTC |
+| Network              | sBTC Address                                           | How to Get              |
+| -------------------- | ------------------------------------------------------ | ----------------------- |
+| **Simnet** (testing) | `ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.sbtc-token` | Auto-funded by Clarinet |
+| **Devnet** (local)   | `ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.sbtc-token` | Auto-funded by Clarinet |
+| **Testnet**          | `ST1F7QA2MDF17S807EPA36TSS8AMEFY4KA9TVGWXT.sbtc-token` | Faucet                  |
+| **Mainnet**          | `ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.sbtc-token` | Bridge from BTC         |
 
 **Clarinet Magic:** Reference the simnet address in your code, and Clarinet automatically remaps it during testnet/mainnet deployment.
 
@@ -179,6 +186,7 @@ stackcast/
 ## 🚀 Quick Start
 
 ### Prerequisites
+
 - [Clarinet](https://github.com/hirosystems/clarinet) (for Stacks contracts)
 - [Bun](https://bun.sh/) (for backend)
 - [Redis](https://redis.io/) (for order storage)
@@ -204,14 +212,16 @@ clarinet deploy --testnet
 ```
 
 **Note:** `Clarinet.toml` includes sBTC as a requirement:
+
 ```toml
 [project]
 requirements = [
-  { contract_id = "SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token" }
+  { contract_id = "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.sbtc-token" }
 ]
 ```
 
 This means Clarinet automatically:
+
 - Downloads the sBTC contract
 - Funds test wallets with sBTC in simnet/devnet
 - Remaps addresses for testnet/mainnet deployment
@@ -241,6 +251,7 @@ bun start
 Server runs on `http://localhost:3000`
 
 The backend includes:
+
 - **REST API**: Markets, orders, orderbook endpoints
 - **Matching Engine**: Runs every 100ms, matches buy/sell orders
 - **Stacks Monitor**: Tracks block height, expires orders automatically
@@ -268,6 +279,7 @@ npm run build
 App runs on `http://localhost:5173`
 
 Features:
+
 - **WalletContext**: React context for Stacks wallet integration
 - **Order Signing**: Uses Stacks message signing for order authentication
 - **Contract Interaction**: Read/write functions for all contracts
@@ -289,6 +301,7 @@ bun scripts/test-api.ts
 ### Markets
 
 #### Create Market
+
 ```bash
 POST /api/markets
 Content-Type: application/json
@@ -301,16 +314,19 @@ Content-Type: application/json
 ```
 
 #### Get All Markets
+
 ```bash
 GET /api/markets
 ```
 
 #### Get Market Details
+
 ```bash
 GET /api/markets/:marketId
 ```
 
 #### Get Market Stats
+
 ```bash
 GET /api/markets/:marketId/stats
 ```
@@ -318,6 +334,7 @@ GET /api/markets/:marketId/stats
 ### Orders
 
 #### Place Order
+
 ```bash
 POST /api/orders
 Content-Type: application/json
@@ -335,16 +352,19 @@ Content-Type: application/json
 ```
 
 #### Get Order
+
 ```bash
 GET /api/orders/:orderId
 ```
 
 #### Get User Orders
+
 ```bash
 GET /api/orders/user/:address?status=OPEN&marketId=market_123
 ```
 
 #### Cancel Order
+
 ```bash
 DELETE /api/orders/:orderId
 Content-Type: application/json
@@ -357,11 +377,13 @@ Content-Type: application/json
 ### Orderbook
 
 #### Get Orderbook
+
 ```bash
 GET /api/orderbook/:marketId?positionId=market_123_yes
 ```
 
 Returns:
+
 ```json
 {
   "success": true,
@@ -380,16 +402,19 @@ Returns:
 ```
 
 #### Get Recent Trades
+
 ```bash
 GET /api/orderbook/:marketId/trades?limit=50
 ```
 
 #### Get Market Price
+
 ```bash
 GET /api/orderbook/:marketId/price
 ```
 
 ### Health Check
+
 ```bash
 GET /health
 ```
@@ -397,24 +422,28 @@ GET /health
 ## 🎯 Key Features
 
 ### 1. Conditional Tokens Framework (CTF)
+
 - **Split**: `100 sBTC → 100 YES + 100 NO`
 - **Merge**: `100 YES + 100 NO → 100 sBTC`
 - **Transfer**: P2P token transfers
 - **Redeem**: After resolution, `100 YES (if YES won) → 100 sBTC`
 
 ### 2. CLOB Matching Engine
+
 - **Price-Time Priority**: Best price first, then FIFO
 - **Matching Frequency**: Every 100ms
 - **Atomic Swaps**: Matched orders execute atomically on-chain
 - **Fee**: 0.5% trading fee
 
 ### 3. Optimistic Oracle
+
 - **Propose**: Anyone can propose an answer (requires bond: 100 tokens)
 - **Dispute**: 24-hour challenge window
 - **Vote**: If disputed, token holders vote (48-hour period)
 - **Resolve**: Final answer reported to CTF for redemption
 
 ### 4. Oracle Adapter
+
 - **Market Creation**: Initializes both CTF condition and oracle question
 - **Resolution**: Fetches oracle result and reports to CTF
 
@@ -430,6 +459,7 @@ GET /health
 ## 📊 Example Flow: Creating and Trading a Market
 
 ### 1. Create Market
+
 ```bash
 curl -X POST http://localhost:3000/api/markets \
   -H "Content-Type: application/json" \
@@ -442,6 +472,7 @@ curl -X POST http://localhost:3000/api/markets \
 ### 2. Market Maker Provides Liquidity
 
 **First, split sBTC into YES+NO tokens on-chain:**
+
 ```clarity
 ;; User deposits 10,000 sBTC
 ;; Contract mints 10,000 YES + 10,000 NO
@@ -449,6 +480,7 @@ curl -X POST http://localhost:3000/api/markets \
 ```
 
 **Then, place orders on CLOB:**
+
 ```bash
 # Sell YES at 55 cents
 curl -X POST http://localhost:3000/api/orders \
@@ -476,6 +508,7 @@ curl -X POST http://localhost:3000/api/orders \
 ```
 
 ### 3. Trader Buys YES
+
 ```bash
 curl -X POST http://localhost:3000/api/orders \
   -H "Content-Type: application/json" \
@@ -490,6 +523,7 @@ curl -X POST http://localhost:3000/api/orders \
 ```
 
 ### 4. Matching Engine Automatically Matches
+
 - Within 100ms, orders match
 - Trade executed: 1000 YES @ 55 cents
 - Fee collected: 0.5% = 2.75 sBTC
@@ -497,6 +531,7 @@ curl -X POST http://localhost:3000/api/orders \
 ### 5. Market Resolves: ETH hits $10k (YES wins!)
 
 **Oracle resolution:**
+
 ```clarity
 (contract-call? .optimistic-oracle propose-answer question-id u1) ;; 1 = YES
 ;; Wait 24 hours...
@@ -504,6 +539,7 @@ curl -X POST http://localhost:3000/api/orders \
 ```
 
 **Winners redeem:**
+
 ```clarity
 ;; Trader redeems 1000 YES tokens
 (contract-call? .conditional-tokens redeem-position condition-id u1)
@@ -511,6 +547,7 @@ curl -X POST http://localhost:3000/api/orders \
 ```
 
 **Market maker:**
+
 ```clarity
 ;; Still holds 9000 YES tokens (sold 1000)
 ;; Redeems for: 9000 sBTC
@@ -520,18 +557,21 @@ curl -X POST http://localhost:3000/api/orders \
 ## 🧪 Testing
 
 ### Contract Tests
+
 ```bash
 cd stackcast-contracts
 clarinet test
 ```
 
 Tests verify:
+
 - ✅ Real sBTC transfers (deposit, withdrawal, redemption)
 - ✅ Split/merge logic
 - ✅ Oracle resolution
 - ✅ Exchange settlement
 
 ### API Tests
+
 ```bash
 cd backend
 bun scripts/test-api.ts
@@ -543,6 +583,7 @@ bun scripts/test-api.ts
 
 1. **Update Clarinet.toml** with your deployer address
 2. **Deploy contracts**:
+
 ```bash
 cd stackcast-contracts
 clarinet deploy --testnet
@@ -550,12 +591,14 @@ clarinet deploy --testnet
 
 3. **Update backend .env** with deployed contract addresses
 4. **Start backend**:
+
 ```bash
 cd backend
 bun start
 ```
 
 ### Mainnet Deployment
+
 Same as testnet, but use `--mainnet` flag and update network config.
 
 ## 🛠️ Tech Stack
@@ -570,12 +613,14 @@ Same as testnet, but use `--mainnet` flag and update network config.
 ## 📝 Roadmap
 
 ### Smart Contracts ✅
+
 - ✅ Conditional Tokens (sBTC collateral)
 - ✅ CTF Exchange (atomic settlement)
 - ✅ Optimistic Oracle (dispute resolution)
 - ✅ Oracle Adapter (market lifecycle)
 
 ### Backend ✅
+
 - ✅ CLOB matching engine (price-time priority, 100ms intervals)
 - ✅ Order management (Redis-backed)
 - ✅ REST API (markets, orders, orderbook)
@@ -583,6 +628,7 @@ Same as testnet, but use `--mainnet` flag and update network config.
 - ✅ Signature verification (optional Stacks signatures)
 
 ### Frontend ✅
+
 - ✅ React + Vite + TypeScript
 - ✅ Wallet integration (@stacks/connect)
 - ✅ Order signing (Stacks message signing)
@@ -590,6 +636,7 @@ Same as testnet, but use `--mainnet` flag and update network config.
 - ✅ Contract interaction utilities
 
 ### To-Do
+
 - [ ] Frontend UI components (order placement, market display, etc.)
 - [ ] WebSocket for real-time orderbook updates
 - [ ] Database persistence layer (PostgreSQL for production)
@@ -600,15 +647,16 @@ Same as testnet, but use `--mainnet` flag and update network config.
 
 ## 🎯 Production Readiness
 
-| Component | Status | Notes |
-|-----------|--------|-------|
-| **Smart Contracts** | ✅ Production | Uses real sBTC collateral |
-| **CLOB API** | ✅ Production | Redis-backed, block monitoring |
-| **Frontend** | ⚠️ In Progress | Wallet integration complete, UI components pending |
-| **Tests** | ✅ Production | Verifies real sBTC movements |
-| **Deployment** | ✅ Ready | Can deploy to testnet/mainnet |
+| Component           | Status         | Notes                                              |
+| ------------------- | -------------- | -------------------------------------------------- |
+| **Smart Contracts** | ✅ Production  | Uses real sBTC collateral                          |
+| **CLOB API**        | ✅ Production  | Redis-backed, block monitoring                     |
+| **Frontend**        | ⚠️ In Progress | Wallet integration complete, UI components pending |
+| **Tests**           | ✅ Production  | Verifies real sBTC movements                       |
+| **Deployment**      | ✅ Ready       | Can deploy to testnet/mainnet                      |
 
 ### For Production Launch:
+
 - ✅ Smart contracts ready
 - ✅ Backend API with Redis
 - ✅ Stacks wallet integration
