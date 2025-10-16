@@ -632,10 +632,10 @@ GET /health
 ### 2. Smart Order Router
 
 **MARKET Orders:**
-- Executes across multiple price levels
+- Executes immediately across multiple price levels
 - Calculates average execution price and slippage
 - Checks liquidity before placement
-- Splits into multiple LIMIT orders at different prices
+- Takes liquidity from opposite side of orderbook (taker orders)
 
 **LIMIT Orders:**
 - Single price placement
