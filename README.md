@@ -1,6 +1,6 @@
 # StackCast - Decentralized Prediction Market on Stacks
 
-A production-ready prediction market platform built on Stacks blockchain, featuring a Polymarket-style CLOB (Central Limit Order Book) architecture with optimistic oracle resolution and ECDSA signature verification. Users bet with **real sBTC** (Bitcoin-backed tokens) as collateral.
+A prediction market platform built on Stacks blockchain, featuring a Polymarket-style CLOB (Central Limit Order Book) architecture with optimistic oracle resolution and ECDSA signature verification. Users bet with **sBTC** (Bitcoin-backed tokens) as collateral.
 
 > **📦 Hackathon Submission Note for Judges**
 > This project is organized into **three separate repositories** under the [StackCast GitHub Organization](https://github.com/orgs/stackcast/repositories):
