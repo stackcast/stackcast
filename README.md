@@ -2,6 +2,15 @@
 
 A production-ready prediction market platform built on Stacks blockchain, featuring a Polymarket-style CLOB (Central Limit Order Book) architecture with optimistic oracle resolution and ECDSA signature verification. Users bet with **real sBTC** (Bitcoin-backed tokens) as collateral.
 
+> **📦 Hackathon Submission Note for Judges**
+> This project is organized into **three separate repositories** under the [StackCast GitHub Organization](https://github.com/orgs/stackcast/repositories):
+>
+> - **[contracts](https://github.com/stackcast/contracts)** - Clarity smart contracts (Conditional Tokens, Exchange, Oracle)
+> - **[server](https://github.com/stackcast/server)** - TypeScript CLOB API backend (Matching Engine, Order Router)
+> - **[web](https://github.com/stackcast/web)** - React frontend (Trading Interface, Wallet Integration)
+>
+> Each repository contains its own README with detailed setup instructions. This document provides the complete system overview.
+
 ## 🏗️ Architecture
 
 ```
@@ -217,63 +226,67 @@ User with NO:    Gets nothing (tokens burned, value lost)
 
 ## 📦 Project Structure
 
+> **Note:** The project is split into three separate GitHub repositories for better organization and modularity. Links to each repository are provided above.
+
 ```
-stackcast/
-├── stackcast-contracts/     # Clarity smart contracts (Stacks)
-│   ├── contracts/
-│   │   ├── sip-010-trait.clar          # SIP-010 fungible token standard
-│   │   ├── conditional-tokens.clar      # Core CTF - splits sBTC into YES/NO
-│   │   ├── ctf-exchange.clar            # Settlement layer with ECDSA verification
-│   │   ├── optimistic-oracle.clar       # UMA-style optimistic oracle
-│   │   └── oracle-adapter.clar          # Connects oracle to CTF
-│   ├── tests/                           # Clarinet tests (vitest)
-│   └── Clarinet.toml                    # Clarinet config (includes sBTC requirement)
-│
-├── server/                  # TypeScript CLOB API (Bun)
-│   ├── src/
-│   │   ├── index.ts                     # Express server with CORS
-│   │   ├── types/
-│   │   │   ├── order.ts                 # Order, Trade, Market, OrderType enums
-│   │   │   └── express.d.ts             # Express augmentation
-│   │   ├── services/
-│   │   │   ├── redisClient.ts           # Redis connection (local/Upstash)
-│   │   │   ├── orderManagerRedis.ts     # Redis-based order storage & indexing
-│   │   │   ├── matchingEngine.ts        # Price-time priority matching (100ms)
-│   │   │   ├── smartRouter.ts           # Multi-level execution planner
-│   │   │   ├── stacksMonitor.ts         # Block height monitoring & auto-expiration
-│   │   │   └── stacksSettlement.ts      # On-chain trade settlement
-│   │   ├── routes/
-│   │   │   ├── markets.ts               # Market CRUD & stats
-│   │   │   ├── smartOrders.ts           # LIMIT/MARKET order placement with sig verification
-│   │   │   ├── orderbook.ts             # Orderbook, trades, price feeds
-│   │   │   └── oracle.ts                # Oracle resolution endpoints
-│   │   └── utils/
-│   │       └── signatureVerification.ts # ECDSA secp256k1 verification
-│   └── package.json
-│
-└── web/                     # Frontend (React + Vite + TypeScript)
-    ├── src/
-    │   ├── App.tsx                      # Main app router
-    │   ├── contexts/
-    │   │   └── WalletContext.tsx        # Stacks wallet integration (@stacks/connect)
-    │   ├── api/
-    │   │   ├── client.ts                # Base API client
-    │   │   └── queries/                 # React Query hooks
-    │   ├── pages/
-    │   │   ├── Markets.tsx              # Market list view
-    │   │   ├── MarketDetail.tsx         # Trading interface with auto split/merge
-    │   │   ├── Portfolio.tsx            # User positions & orders
-    │   │   ├── Oracle.tsx               # Oracle proposal/voting
-    │   │   └── Redeem.tsx               # Redeem winning positions
-    │   ├── components/
-    │   │   └── ui/                      # Radix UI components (shadcn)
-    │   ├── lib/
-    │   │   ├── config.ts                # Network & contract configs
-    │   │   └── utils.ts                 # Utility functions
-    │   └── utils/
-    │       ├── orderSigning.ts          # ECDSA order hash computation & signing
-    │       └── stacksHelpers.ts         # Contract interaction utilities
-    └── package.json
+# Repository: github.com/stackcast/contracts
+contracts/
+├── contracts/
+│   ├── sip-010-trait.clar          # SIP-010 fungible token standard
+│   ├── conditional-tokens.clar      # Core CTF - splits sBTC into YES/NO
+│   ├── ctf-exchange.clar            # Settlement layer with ECDSA verification
+│   ├── optimistic-oracle.clar       # UMA-style optimistic oracle
+│   └── oracle-adapter.clar          # Connects oracle to CTF
+├── tests/                           # Clarinet tests (vitest)
+└── Clarinet.toml                    # Clarinet config (includes sBTC requirement)
+
+# Repository: github.com/stackcast/server
+server/
+├── src/
+│   ├── index.ts                     # Express server with CORS
+│   ├── types/
+│   │   ├── order.ts                 # Order, Trade, Market, OrderType enums
+│   │   └── express.d.ts             # Express augmentation
+│   ├── services/
+│   │   ├── redisClient.ts           # Redis connection (local/Upstash)
+│   │   ├── orderManagerRedis.ts     # Redis-based order storage & indexing
+│   │   ├── matchingEngine.ts        # Price-time priority matching (100ms)
+│   │   ├── smartRouter.ts           # Multi-level execution planner
+│   │   ├── stacksMonitor.ts         # Block height monitoring & auto-expiration
+│   │   └── stacksSettlement.ts      # On-chain trade settlement
+│   ├── routes/
+│   │   ├── markets.ts               # Market CRUD & stats
+│   │   ├── smartOrders.ts           # LIMIT/MARKET order placement with sig verification
+│   │   ├── orderbook.ts             # Orderbook, trades, price feeds
+│   │   └── oracle.ts                # Oracle resolution endpoints
+│   └── utils/
+│       └── signatureVerification.ts # ECDSA secp256k1 verification
+└── package.json
+
+# Repository: github.com/stackcast/web
+web/
+├── src/
+│   ├── App.tsx                      # Main app router
+│   ├── contexts/
+│   │   └── WalletContext.tsx        # Stacks wallet integration (@stacks/connect)
+│   ├── api/
+│   │   ├── client.ts                # Base API client
+│   │   └── queries/                 # React Query hooks
+│   ├── pages/
+│   │   ├── Markets.tsx              # Market list view
+│   │   ├── MarketDetail.tsx         # Trading interface with auto split/merge
+│   │   ├── Portfolio.tsx            # User positions & orders
+│   │   ├── Oracle.tsx               # Oracle proposal/voting
+│   │   └── Redeem.tsx               # Redeem winning positions
+│   ├── components/
+│   │   └── ui/                      # Radix UI components (shadcn)
+│   ├── lib/
+│   │   ├── config.ts                # Network & contract configs
+│   │   └── utils.ts                 # Utility functions
+│   └── utils/
+│       ├── orderSigning.ts          # ECDSA order hash computation & signing
+│       └── stacksHelpers.ts         # Contract interaction utilities
+└── package.json
 ```
 
 ## 🚀 Quick Start
@@ -289,7 +302,9 @@ stackcast/
 ### 1. Smart Contracts
 
 ```bash
-cd stackcast-contracts
+# Clone the contracts repository
+git clone https://github.com/stackcast/contracts.git
+cd contracts
 
 # Check all contracts compile
 clarinet check
@@ -322,6 +337,8 @@ This means Clarinet automatically:
 ### 2. Backend API
 
 ```bash
+# Clone the server repository
+git clone https://github.com/stackcast/server.git
 cd server
 
 # Install dependencies
@@ -358,6 +375,8 @@ The backend includes:
 ### 3. Frontend Web App
 
 ```bash
+# Clone the web repository
+git clone https://github.com/stackcast/web.git
 cd web
 
 # Install dependencies
@@ -850,7 +869,8 @@ bun run scripts/test-api.ts
 2. **Deploy contracts**:
 
 ```bash
-cd stackcast-contracts
+# From the contracts repository
+cd contracts
 clarinet deploy --testnet
 ```
 
