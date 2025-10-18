@@ -85,30 +85,38 @@ StackCast uses **ECDSA (Elliptic Curve Digital Signature Algorithm)** with the *
 ### **How It Works**
 
 #### **1. Order Signing (Frontend)**
+
 ```typescript
 // User's wallet signs the order hash
 const orderHash = SHA256(
-  maker + taker +
-  makerPositionId + takerPositionId +
-  makerAmount + takerAmount +
-  salt + expiration
-)
-const signature = wallet.sign(orderHash) // → 65-byte RSV signature
+  maker +
+    taker +
+    makerPositionId +
+    takerPositionId +
+    makerAmount +
+    takerAmount +
+    salt +
+    expiration
+);
+const signature = wallet.sign(orderHash); // → 65-byte RSV signature
 ```
 
 **Signature Format (65 bytes):**
+
 - **R** (32 bytes): x-coordinate of ephemeral public key
 - **S** (32 bytes): Signature proof value
 - **V** (1 byte): Recovery ID (0-3) enables public key recovery
 
 #### **2. Backend Verification**
+
 ```typescript
 // Recover public key from signature
-const recoveredPubKey = secp256k1.recover(orderHash, signature)
-const isValid = (recoveredPubKey === expectedPublicKey)
+const recoveredPubKey = secp256k1.recover(orderHash, signature);
+const isValid = recoveredPubKey === expectedPublicKey;
 ```
 
 #### **3. On-Chain Verification (Clarity Smart Contract)**
+
 ```clarity
 ;; Contract verifies signature again during settlement
 (secp256k1-recover? order-hash signature)
@@ -462,6 +470,7 @@ GET /api/markets/:marketId/stats
 ```
 
 Returns:
+
 ```json
 {
   "success": true,
@@ -494,6 +503,7 @@ Content-Type: application/json
 ```
 
 Response:
+
 ```json
 {
   "success": true,
@@ -552,6 +562,7 @@ Content-Type: application/json
 ```
 
 Response (MARKET):
+
 ```json
 {
   "success": true,
@@ -569,6 +580,7 @@ Response (MARKET):
 ```
 
 Response (LIMIT):
+
 ```json
 {
   "success": true,
@@ -591,6 +603,7 @@ GET /api/orderbook/:marketId?outcome=yes
 ```
 
 Returns:
+
 ```json
 {
   "success": true,
@@ -621,6 +634,7 @@ GET /api/orderbook/:marketId/price?outcome=yes
 ```
 
 Returns:
+
 ```json
 {
   "success": true,
@@ -651,17 +665,20 @@ GET /health
 ### 2. Smart Order Router
 
 **MARKET Orders:**
+
 - Executes immediately across multiple price levels
 - Calculates average execution price and slippage
 - Checks liquidity before placement
 - Takes liquidity from opposite side of orderbook (taker orders)
 
 **LIMIT Orders:**
+
 - Single price placement
 - Joins order book at specified price
 - Waits for matching counterparty
 
 **Execution Preview:**
+
 - Shows exactly how order would execute
 - Displays price levels, sizes, and costs
 - Calculates slippage and feasibility
@@ -690,18 +707,21 @@ GET /health
 ## 🔐 Security Features
 
 ### Cryptographic Security
+
 - ✅ **ECDSA secp256k1 signatures** (Bitcoin's proven crypto)
 - ✅ **Public key recovery** verification (backend + on-chain)
 - ✅ **SHA-256 order hashing** (tamper-proof)
 - ✅ **RSV signature format** (65-byte compact signatures)
 
 ### Order Security
+
 - ✅ **Salt-based replay protection** (prevent signature reuse)
 - ✅ **Order expiration by block height** (auto-expire old orders)
 - ✅ **Maker-only order cancellation** (only order creator can cancel)
 - ✅ **Signature verification** (frontend signs, backend + contract verify)
 
 ### Protocol Security
+
 - ✅ **Emergency pause functionality** (owner can pause trading)
 - ✅ **Approval system for token transfers** (ERC-1155 style approvals)
 - ✅ **Bond-based oracle security** (proposers stake tokens)
@@ -915,12 +935,14 @@ Same as testnet, but use `--mainnet` flag and update network config to `mainnet`
 ## 🛠️ Tech Stack
 
 ### Blockchain
+
 - **Layer 2**: Stacks (Bitcoin L2)
 - **Smart Contracts**: Clarity language
 - **Collateral**: sBTC (1:1 Bitcoin-backed)
 - **Token Standard**: SIP-010 (fungible tokens)
 
 ### Backend
+
 - **Runtime**: Bun (fast TypeScript runtime)
 - **Framework**: Express.js
 - **Storage**: Redis (Upstash or local)
@@ -928,6 +950,7 @@ Same as testnet, but use `--mainnet` flag and update network config to `mainnet`
 - **Network**: @stacks/network, @stacks/transactions
 
 ### Frontend
+
 - **Framework**: React 19
 - **Build Tool**: Vite
 - **State**: React Query (@tanstack/react-query)
@@ -937,6 +960,7 @@ Same as testnet, but use `--mainnet` flag and update network config to `mainnet`
 - **Icons**: Lucide React
 
 ### Testing
+
 - **Contracts**: Clarinet + Vitest
 - **Backend**: Bun test
 - **E2E**: Manual testing with real wallets
@@ -985,17 +1009,17 @@ Same as testnet, but use `--mainnet` flag and update network config to `mainnet`
 
 ## 🎯 Production Readiness
 
-| Component                      | Status         | Notes                                              |
-| ------------------------------ | -------------- | -------------------------------------------------- |
-| **Smart Contracts**            | ✅ Production  | ECDSA verified, real sBTC collateral               |
-| **CLOB API**                   | ✅ Production  | Redis-backed, 100ms matching, signature verified   |
-| **Smart Router**               | ✅ Production  | MARKET/LIMIT orders, slippage protection           |
-| **Frontend**                   | ✅ Production  | Wallet integration, auto split/merge, UI complete  |
-| **Signature Verification**     | ✅ Production  | ECDSA secp256k1 (backend + on-chain)               |
-| **Tests**                      | ✅ Production  | Contract & integration tests passing               |
-| **Deployment**                 | ✅ Ready       | Can deploy to testnet/mainnet                      |
-| **Monitoring**                 | ⚠️ Needed      | Add DataDog/Sentry for production                  |
-| **Market Maker Bots**          | ⚠️ Needed      | Need example bots for liquidity                    |
+| Component                  | Status        | Notes                                             |
+| -------------------------- | ------------- | ------------------------------------------------- |
+| **Smart Contracts**        | ✅ Production | ECDSA verified, real sBTC collateral              |
+| **CLOB API**               | ✅ Production | Redis-backed, 100ms matching, signature verified  |
+| **Smart Router**           | ✅ Production | MARKET/LIMIT orders, slippage protection          |
+| **Frontend**               | ✅ Production | Wallet integration, auto split/merge, UI complete |
+| **Signature Verification** | ✅ Production | ECDSA secp256k1 (backend + on-chain)              |
+| **Tests**                  | ✅ Production | Contract & integration tests passing              |
+| **Deployment**             | ✅ Ready      | Can deploy to testnet/mainnet                     |
+| **Monitoring**             | ⚠️ Needed     | Add DataDog/Sentry for production                 |
+| **Market Maker Bots**      | ⚠️ Needed     | Need example bots for liquidity                   |
 
 ### For Production Launch:
 
